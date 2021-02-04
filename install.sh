@@ -311,7 +311,7 @@ then
 	cd ~/tools/
 	wget https://github.com/smicallef/spiderfoot/archive/v3.3.tar.gz
 	tar zxvf v3.3.tar.gz
-	cd ~/tools/spiderfoot
+	cd ~/tools/spiderfoot-3.3
 	pip3 install -r requirements.txt
 	cd ~/tools/
 	rm v3.3.tar.gz
