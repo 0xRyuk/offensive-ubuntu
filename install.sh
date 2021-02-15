@@ -373,4 +373,4 @@ echo -e "$reset"
 echo "Installation compeleted."
 echo "Your ubuntu is ready to use!"
 sleep 5
-exit
+exit 0
