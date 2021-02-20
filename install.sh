@@ -158,7 +158,6 @@ fi
 
 if [ ! -e ~/go-workspace/bin/nuclie ]
 then
-	echo "Installing ffuf"
 	echo "Installing nuclie"
 	sudo GO111MODULE=on go get -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei
 	echo "Installing nuclie templets"
