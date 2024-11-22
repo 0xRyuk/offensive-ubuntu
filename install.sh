@@ -3,8 +3,8 @@
 #
 green='\033[1;32m'
 red='\033[1;31m'
-cyan="\[\033[0;36m\]"
-yellow="\[\033[0;33m\]"
+cyan="\033[0;36m\]"
+yellow="\033[0;33m\]"
 reset='\033[0m'
 
 # Get the architecture of the system
@@ -20,7 +20,7 @@ if [ "$architecture" == "x86_64" ]; then
 else
     echo -e "$red Unable to determine system architecture. $reset"
 fi
-
+sudo add-apt-repository universe -y
 sudo apt-get update && apt-get upgrade -y
 sleep 2
 sudo apt install figlet
@@ -58,7 +58,7 @@ sudo apt-get install -y sublime-text
 echo -e "$green Done $reset"
 
 echo -e "$green Installing python2-pip $reset"
-curl -LO https://bootstrap.pypa.io/get-pip.py --output get-pip.py
+sudo curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 python2 get-pip.py
 sleep 1
 rm get-pip.py
