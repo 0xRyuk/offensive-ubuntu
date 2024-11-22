@@ -102,10 +102,10 @@ then
     #sudo snap install go --classic
     wget https://dl.google.com/go/go1.19.4.linux-${AARCH}.tar.gz
     sudo tar -C /usr/local/ -xzf go1.19.4.linux-${AARCH}.tar.gz
-    echo "export GOROOT=/usr/local/go">>~/.profile
-    echo "export GOPATH=$HOME/go-workspace">>~/.profile
-    echo "export PATH=$GOPATH/bin:$GOROOT/bin:$PATH">>~/.profile
-    source ~/.profile
+    echo "export GOROOT=/usr/local/go">>~/.bash_aliases
+    echo "export GOPATH=$HOME/go-workspace">>~/.bash_aliases
+    echo "export PATH=$GOPATH/bin:$GOROOT/bin:$PATH">>~/.bash_aliases
+    source ~/.bashrc
     echo "Done"
     sleep 2
 else
