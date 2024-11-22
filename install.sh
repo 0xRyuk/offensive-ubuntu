@@ -86,7 +86,13 @@ echo "Installing Amass"
 sudo snap install amass
 echo "Done"
 
+# setup file for aliases
 
+if [ ! -f "~/.bash_aliases" ]; then
+	echo "Creating file .bash_aliases!"
+    touch ~/.bash_aliases
+    sudo chmod 644 ~/.bash_aliases
+fi
 
 #Checking for golang
 
