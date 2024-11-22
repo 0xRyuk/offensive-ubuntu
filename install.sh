@@ -3,6 +3,8 @@
 #
 green='\033[1;32m'
 red='\033[1;31m'
+cyan="\[\033[0;36m\]"
+yellow="\[\033[0;33m\]"
 reset='\033[0m'
 
 # Get the architecture of the system
@@ -16,7 +18,7 @@ if [ "$architecture" == "x86_64" ]; then
     elif [ "$architecture" == "arm64" ]; then
     AARCH="arm64"
 else
-    echo "Unable to determine system architecture."
+    echo -e "$red Unable to determine system architecture. $reset"
 fi
 
 sudo apt-get update && apt-get upgrade -y
@@ -31,65 +33,66 @@ echo -e "$green preparing setup please wait..$reset"
 
 sleep 5
 
-#Installing tools using "sudo apt update"
+#Installing packages using "apt package manager"
 
 PACKAGES=("recordmydesktop" "python3" "python2" "hashcat" "vim" "net-tools" "aircrack-ng" "traceroute" "python3-pip" "python-setuptools" "libimage-exiftool-perl" "binwalk" "steghide" "libldns-dev" "nmap" "build-essential" "libssl-dev" "libffi-dev" "python-dev" "hydra-gtk" "reaver" "wifite" "pixiewps" "cowpatty" "netcat" "ettercap-graphical" "btscanner" "dnsmap" "dnsenum" "dnsrecon" "dnswalk" "wafw00f" "mitmproxy" "macchanger" "dsniff" "chkrootkit" "backdoor-factory" "netsniff-ng" "iputils-arping" "sleuthkit" "xprobe" "masscan" "netdiscover" "netmask" "nbtscan" "hexedit" "proxytunnel" "foremost" "recoverjpeg" "smbmap" "dmitry" "sqlmap" "recon-ng" "autopsy" "hashdeep" "httrack" "burp" "wfuzz" "beef" "perl" "openjdk-11-jre" "libcurl4-openssl-dev" "ruby-full" "libxml2" "libxml2-dev" "libxslt1-dev" "ruby-dev" "libgmp-dev" "zlib1g-dev" "git" "curl" "wget" "openvpn" "openssh" "wireshark-qt" "openjdk-8-jdk" "libcurl4-openssl-dev" "libssl-dev" "jq" "python-dnspython" "rename")
 
 for PKG in ${PACKAGES[@]}
-
 do
     IS_INSTALLED=$(sudo dpkg-query -W --showformat='${Status}\n' ${PKG} | grep "install ok installed")
     if [ "${IS_INSTALLED}" == "install ok installed" ]
     then
-        echo -e "${PKG} is installed."
+        echo -e "$cyan ${PKG} is already installed. $reset"
     else
+        echo -e "$green Installing ${PKG}. $reset"
         sudo apt install -y ${PKG}
     fi
 done
 
-echo "Installing sublime text3"
+echo -e "$green Installing sublime-text3 $reset"
 wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-sudo apt-get install apt-transport-https
+sudo apt-get install -y apt-transport-https
 echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 sudo apt-get update
-sudo apt-get install sublime-text
-echo "Done"
+sudo apt-get install -y sublime-text
+echo -e "$green Done $reset"
 
-echo "Installing python2-pip"
+echo -e "$green Installing python2-pip $reset"
 curl -LO https://bootstrap.pypa.io/get-pip.py --output get-pip.py
 python2 get-pip.py
 sleep 1
 rm get-pip.py
-echo "Done"
+echo -e "$green Done $reset"
 
-echo "Installing stegoveritas"
+echo -e "$green Installing stegoveritas $reset"
 pip3 install stegoveritas
 stegoveritas_install_deps
-echo "Done"
+echo -e "$green Done $reset"
 
-#Install using "sudo snap install <package-name>""
+#Install using "snap store"
 
 
-echo "Installing JohnTheRipper"
+echo -e "$green Installing JohnTheRipper $reset"
 sudo snap install john-the-ripper
-echo "Done"
+echo -e "$green Done $reset"
 
-echo "Installing volatility"
+echo -e "$green Installing volatility $reset"
 sudo snap install volatility-phocean
-echo "Done"
+echo -e "$green Done $reset"
 
-echo "Installing Chromium"
+echo -e "$green Installing Chromium $reset"
 sudo snap install chromium
-echo "Done"
+echo -e "$green Done $reset"
 
-echo "Installing Amass"
+echo -e "$green Installing Amass $reset"
 sudo snap install amass
-echo "Done"
+echo -e "$green Done $reset"
 
 # setup file for aliases
 
-if [ ! -f "~/.bash_aliases" ]; then
-	echo "Creating file .bash_aliases!"
+if [ ! -f "~/.bash_aliases" ]
+then
+	echo -e "Creating file $yellow .bash_aliases$reset!"
     touch ~/.bash_aliases
     sudo chmod 644 ~/.bash_aliases
 fi
@@ -98,7 +101,7 @@ fi
 
 if [ ! -d /usr/local/go ]
 then
-    echo "Installing golang!!"
+    echo -e "$green Installing golang! $reset"
     #sudo snap install go --classic
     wget https://dl.google.com/go/go1.19.4.linux-${AARCH}.tar.gz
     sudo tar -C /usr/local/ -xzf go1.19.4.linux-${AARCH}.tar.gz
@@ -106,287 +109,292 @@ then
     echo "export GOPATH=$HOME/go-workspace">>~/.bash_aliases
     echo "export PATH=$GOPATH/bin:$GOROOT/bin:$PATH">>~/.bash_aliases
     source ~/.bashrc
-    echo "Done"
+    echo -e "$green Done $reset"
     sleep 2
 else
     echo "Golang already installed!"
 fi
-mkdir ~/tools
-cd ~/tools/
 
-echo "Checking for existing packages"
+if [ ! -d "~/arsenal" ]
+then
+    echo -e "$cyan Creating directory for 'arsenal'. $reset"
+    mkdir ~/arsenal
+fi
+cd ~/arsenal/
 
-#Installing golang based tools using "go get <package-url>" these tools can be find in "~/go-workspace/bin"
+echo -e "$yellow Checking for existing go packages... $reset"
+
+#Installing golang based arsenal using "go get <package-url>" these arsenal can be find in "~/go-workspace/bin"
 
 if [ ! -e ~/go-workspace/bin/aquatone ]
 then
     #install aquatone
-    echo "Installing Aquatone"
+    echo -e "$green Installing Aquatone $reset"
     go get github.com/michenriksen/aquatone
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "Aquatone already installed"
+    echo -e "$yellow Aquatone is already installed $reset"
 fi
 
 if [ ! -e ~/go-workspace/bin/httprobe ]
 then
-    echo "Installing httprobe"
+    echo -e "$green Installing httprobe $reset"
     go get -u github.com/tomnomnom/httprobe
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "httprobe already installed"
+    echo -e "$yellow httprobe is already installed $reset"
 fi
 
 if [ ! -e ~/go-workspace/bin/unfurl ]
 then
-    echo "Installing unfurl"
+    echo -e "$green Installing unfurl $reset"
     go get -u github.com/tomnomnom/unfurl
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "unfurl already installed"
+    echo -e "$yellow unfurl is already installed $reset"
 fi
 
 if [ ! -e ~/go-workspace/bin/waybackurls ]
 then
     echo "Installing waybackurls"
     go get github.com/tomnomnom/waybackurls
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "waybackurls already installed"
+    echo -e "$yellow waybackurls is already installed $reset"
 fi
 
 if [ ! -e ~/go-workspace/bin/gobuster ]
 then
-    echo "Instaling gobuster"
+    echo -e "$green Instaling gobuster $reset"
     go get github.com/OJ/gobuster
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "gobuster already installed"
+    echo -e "$yellow gobuster is already installed $reset"
 fi
 
 if [ ! -e ~/go-workspace/bin/ffuf ]
 then
-    echo "Installing ffuf"
+    echo -e "$green Installing ffuf $reset"
     go get -u github.com/ffuf/ffuf
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "ffuf already installed"
+    echo -e "$yellow ffuf is already installed $reset"
 fi
 
 if [ ! -e ~/go-workspace/bin/nuclie ]
 then
-    echo "Installing nuclie"
+    echo -e "$green Installing nuclie $reset"
     sudo GO111MODULE=on go get -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei
-    echo "Installing nuclie templets"
+    echo -e "$green Installing nuclie templets $reset"
     nuclie -update-templates
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "nuclie already installed"
+    echo -e "$yellow nuclie is already installed $reset"
 fi
 
 
-#Installing packages from github, these packages can be find in "~/tools"
+#Installing packages from github, these packages can be find in "~/arsenal"
 
-cd ~/tools
+cd ~/arsenal
 
-if [ ! -d ~/tools/teh_s3_bucketeers ]
+if [ ! -d ~/arsenal/teh_s3_bucketeers ]
 then
-    echo "Installing teh_s3_bucketeers"
+    echo -e "$green Installing teh_s3_bucketeers $reset"
     git clone https://github.com/tomdev/teh_s3_bucketeers.git
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "JSParser already installed"
+    echo -e "$yellow JSParser is already installed $reset"
 fi
 
-if [ ! -d ~/tools/JSParser ]
+if [ ! -d ~/arsenal/JSParser ]
 then
-    echo "Installing JSParser"
+    echo -e "$green Installing JSParser $reset"
     git clone https://github.com/nahamsec/JSParser.git
     cd JSParser*
     sudo python setup.py install
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "JSParser already installed"
+    echo -e "$yellow JSParser is already installed $reset"
 fi
 
-if [ ! -d ~/tools/Sublist3r ]
+if [ ! -d ~/arsenal/Sublist3r ]
 then
-    echo "Installing Sublist3r"
+    echo -e "$green Installing Sublist3r $reset"
     git clone https://github.com/aboul3la/Sublist3r.git
     cd Sublist3r*
     pip install -r requirements.txt
     python3 setup.py install
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "Sublist3r already installed"
+    echo -e "$yellow Sublist3r is already installed $reset"
 fi
 
-if [ ! -d ~/tools/dirsearch ]
+if [ ! -d ~/arsenal/dirsearch ]
 then
-    echo "Installing dirsearch"
+    echo -e "$green Installing dirsearch $reset"
     git clone https://github.com/maurosoria/dirsearch.git
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "dirsearch already installed"
+    echo -e "$yellow dirsearch is already installed $reset"
 fi
 
-if [ ! -d ~/tools/lazys3 ]
+if [ ! -d ~/arsenal/lazys3 ]
 then
-    echo "Installing lazys3"
+    echo -e "$green Installing lazys3 $reset"
     git clone https://github.com/nahamsec/lazys3.git
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "lazys3 already installed"
+    echo -e "$yellow lazys3 is already installed $reset"
 fi
 
-if [ ! -d ~/tools/virtual-host-discovery ]
+if [ ! -d ~/arsenal/virtual-host-discovery ]
 then
-    echo "Installing virtual host discovery"
+    echo -e "$green Installing virtual host discovery $reset"
     git clone https://github.com/jobertabma/virtual-host-discovery.git
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "virtual-host-discovery already installed"
+    echo -e "$yellow virtual-host-discovery is already installed $reset"
 fi
 
-if [ ! -d ~/tools/knock ]
+if [ ! -d ~/arsenal/knock ]
 then
-    echo "Installing knock.py"
+    echo -e "$green Installing knock.py $reset"
     git clone https://github.com/guelfoweb/knock.git
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "knock.py already installed"
+    echo -e "$yellow knock.py is already installed $reset"
 fi
 
-if [ ! -d ~/tools/lazyrecon ]
+if [ ! -d ~/arsenal/lazyrecon ]
 then
-    echo "Installing lazyrecon"
+    echo -e "$green Installing lazyrecon $reset"
     git clone https://github.com/nahamsec/lazyrecon.git
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "lazyrecon already installed"
+    echo -e "$yellow lazyrecon is already installed $reset"
 fi
 
-if [ ! -d ~/tools/massdns ]
+if [ ! -d ~/arsenal/massdns ]
 then
-    echo "Installing massdns"
+    echo -e "$green Installing massdns $reset"
     git clone https://github.com/blechschmidt/massdns.git
-    cd ~/tools/massdns
+    cd ~/arsenal/massdns
     make
     make install
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "massdns already installed"
+    echo -e "$yellow massdns is already installed $reset"
 fi
 
-if [ ! -d ~/tools/asnlookup ]
+if [ ! -d ~/arsenal/asnlookup ]
 then
-    echo "Installing asnlookup"
+    echo -e "$green Installing asnlookup $reset"
     git clone https://github.com/yassineaboukir/asnlookup.git
-    cd ~/tools/asnlookup
+    cd ~/arsenal/asnlookup
     pip install -r requirements.txt
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "asnlookup already installed"
+    echo -e "$yellow asnlookup is already installed $reset"
 fi
 
-if [ ! -d ~/tools/crtndstry ]
+if [ ! -d ~/arsenal/crtndstry ]
 then
-    echo "Installing crtndstry"
+    echo -e "$green Installing crtndstry $reset"
     git clone https://github.com/nahamsec/crtndstry.git
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "crtndstry already installed"
+    echo -e "$yellow crtndstry is already installed $reset"
 fi
 
-if [ ! -d ~/tools/Seclists ]
+if [ ! -d ~/arsenal/Seclists ]
 then
-    echo "Downloading Seclists"
-    cd ~/tools/
+    echo -e "$green Downloading Seclists $reset"
+    cd ~/arsenal/
     git clone https://github.com/danielmiessler/SecLists.git
-    cd ~/tools/SecLists/Discovery/DNS/
+    cd ~/arsenal/SecLists/Discovery/DNS/
     ##THIS FILE BREAKS MASSDNS AND NEEDS TO BE CLEANED
     cat dns-Jhaddix.txt | head -n -14 > clean-jhaddix-dns.txt
-    cd ~/tools/
-    echo "Done"
+    cd ~/arsenal/
+    echo -e "$green Done $reset"
 else
-    echo "Seclists already installed"
+    echo -e "$yellow SecLists are already installed $reset"
 fi
 
-if [ ! -d ~/tools/Spiderfoot ]
+if [ ! -d ~/arsenal/Spiderfoot ]
 then
-    echo "Installing Spiderfoot"
-    cd ~/tools/
+    echo -e "$green Installing Spiderfoot $reset"
+    cd ~/arsenal/
     wget https://github.com/smicallef/spiderfoot/archive/v3.3.tar.gz
     tar zxvf v3.3.tar.gz
-    cd ~/tools/spiderfoot-3.3
+    cd ~/arsenal/spiderfoot-3.3
     pip3 install -r requirements.txt
-    cd ~/tools/
+    cd ~/arsenal/
     rm v3.3.tar.gz
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "Spiderfoot already installed"
+    echo -e "$yellow Spiderfoot is already installed $reset"
 fi
 
-if [ ! -d ~/tools/enum4linux ]
+if [ ! -d ~/arsenal/enum4linux ]
 then
-    echo "Installing enum4linux"
+    echo -e "$green Installing enum4linux $reset"
     git clone https://github.com/CiscoCXSecurity/enum4linux.git
     chmod +x enum4linux/enum4linux.pl
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "enum4linux already installed"
+    echo -e "$yellow enum4linux is already installed $reset"
 fi
 
 if [ ! -d ~/opt/dirbuster ]
 then
-    echo "Installing Dirbuster"
-    cd ~/tools/
+    echo -e "$green Installing Dirbuster $reset"
+    cd ~/arsenal/
     git clone https://gitlab.com/kalilinux/packages/dirbuster.git
     sudo mv dirbuster /opt
     alias dirbuster="source /opt/dirbuster/DirBuster-1.0-RC1.sh"
-    echo "Done"
+    echo -e "$green Done $reset"
 else
-    echo "Dirbuster already installed"
+    echo -e "$yellow Dirbuster is already installed $reset"
 fi
 
-echo "Installing Metasploit-framework"
+echo -e "$green Installing Metasploit-framework $reset"
 curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod 755 msfinstall && ./msfinstall
 rm msfinstall
-echo "Done"
+echo -e "$green Done $reset"
 
-echo "Installing Maletgo"
+echo -e "$green Installing Maletgo $reset"
 curl -LO https://maltego-downloads.s3.us-east-2.amazonaws.com/linux/Maltego.v4.3.1.deb
 sudo dpkg -i Maltego.v4.3.1.deb
 sleep 1
-echo "Done"
+echo -e "$green Done $reset"
 
-echo "Installing wpscan"
+echo -e "$green Installing wpscan $reset"
 sudo gem install wpscan
-echo "Done"
+echo -e "$green Done $reset"
 
-echo "Installing SEToolkit"
+echo -e "$green Installing SEToolkit $reset"
 git clone https://github.com/trustedsec/social-engineer-toolkit/ setoolkit/
 cd setoolkit
 pip3 install -r requirements.txt
 sudo python3 setup.py
 rm -rf setoolkit
-echo "Done"
+echo -e "$green Done $reset"
 clear
 
 echo -e "$red"
 figlet "Offensive Ubuntu"
 echo "Github : https://github.com/0xRyuk"
 echo -e "$reset"
-echo "Installation compeleted."
-echo "Your ubuntu is ready to use!"
+echo -e "$green Installation compeleted. $reset"
+echo -e "$cyan Your ubuntu is ready to use! $reset"
 sleep 5
 exit 0
