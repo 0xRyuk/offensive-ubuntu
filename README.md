@@ -1,6 +1,6 @@
 # Offensive-Ubuntu v1.0
 
-Script for install kali linux tools,Bug hunter's favrouite tools amd other third party tools useful for ctf's and hacking on ubuntu machine.
+Script to install Kali Linux tools, bug hunter's favorite tools, and other third-party tools useful for CTFs and hacking on an Ubuntu machine.
 
 `git clone https://github.com/Ryuk0x01/offensive-ubuntu.git`
 
@@ -12,7 +12,7 @@ Script for install kali linux tools,Bug hunter's favrouite tools amd other third
 
 ## Packages
 
-some packages needs to run from `~/tools/`
+some packages needs to run from `~/arsenal/`
 
 #### Total 87 package added
 
