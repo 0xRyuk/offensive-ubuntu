@@ -103,8 +103,8 @@ if [ ! -d /usr/local/go ]
 then
     echo -e "$green Installing golang! $reset"
     #sudo snap install go --classic
-    wget https://dl.google.com/go/go1.19.4.linux-${AARCH}.tar.gz
-    sudo tar -C /usr/local/ -xzf go1.19.4.linux-${AARCH}.tar.gz
+    wget https://dl.google.com/go/go1.23.3.linux-${AARCH}.tar.gz
+    sudo tar -C /usr/local/ -xzf go1.23.3.linux-${AARCH}.tar.gz
     echo "export GOROOT=/usr/local/go">>~/.bash_aliases
     echo "export GOPATH=$HOME/go-workspace">>~/.bash_aliases
     echo "export PATH=$GOPATH/bin:$GOROOT/bin:$PATH">>~/.bash_aliases
@@ -124,13 +124,13 @@ cd ~/arsenal/
 
 echo -e "$yellow Checking for existing go packages... $reset"
 
-#Installing golang based arsenal using "go get <package-url>" these arsenal can be find in "~/go-workspace/bin"
+#Installing golang based tools using "go install <package-url>" these tools can be find in "~/go-workspace/bin"
 
 if [ ! -e ~/go-workspace/bin/aquatone ]
 then
     #install aquatone
     echo -e "$green Installing Aquatone $reset"
-    go get github.com/michenriksen/aquatone
+    go install github.com/michenriksen/aquatone@latest
     echo -e "$green Done $reset"
 else
     echo -e "$yellow Aquatone is already installed $reset"
@@ -139,7 +139,7 @@ fi
 if [ ! -e ~/go-workspace/bin/httprobe ]
 then
     echo -e "$green Installing httprobe $reset"
-    go get -u github.com/tomnomnom/httprobe
+    go install github.com/tomnomnom/httprobe@latest
     echo -e "$green Done $reset"
 else
     echo -e "$yellow httprobe is already installed $reset"
@@ -148,7 +148,7 @@ fi
 if [ ! -e ~/go-workspace/bin/unfurl ]
 then
     echo -e "$green Installing unfurl $reset"
-    go get -u github.com/tomnomnom/unfurl
+    go install github.com/tomnomnom/unfurl@latest
     echo -e "$green Done $reset"
 else
     echo -e "$yellow unfurl is already installed $reset"
@@ -157,7 +157,7 @@ fi
 if [ ! -e ~/go-workspace/bin/waybackurls ]
 then
     echo "Installing waybackurls"
-    go get github.com/tomnomnom/waybackurls
+    go install github.com/tomnomnom/waybackurls@latest
     echo -e "$green Done $reset"
 else
     echo -e "$yellow waybackurls is already installed $reset"
@@ -166,7 +166,7 @@ fi
 if [ ! -e ~/go-workspace/bin/gobuster ]
 then
     echo -e "$green Instaling gobuster $reset"
-    go get github.com/OJ/gobuster
+    go install github.com/OJ/gobuster@latest
     echo -e "$green Done $reset"
 else
     echo -e "$yellow gobuster is already installed $reset"
@@ -175,7 +175,7 @@ fi
 if [ ! -e ~/go-workspace/bin/ffuf ]
 then
     echo -e "$green Installing ffuf $reset"
-    go get -u github.com/ffuf/ffuf
+    go install github.com/ffuf/ffuf@latest
     echo -e "$green Done $reset"
 else
     echo -e "$yellow ffuf is already installed $reset"
@@ -184,7 +184,7 @@ fi
 if [ ! -e ~/go-workspace/bin/nuclie ]
 then
     echo -e "$green Installing nuclie $reset"
-    sudo GO111MODULE=on go get -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei
+    go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
     echo -e "$green Installing nuclie templets $reset"
     nuclie -update-templates
     echo -e "$green Done $reset"
