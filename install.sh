@@ -109,3 +109,106 @@ initialize_setup() {
     
     show_banner
 }
+
+# Function to detect latest golang version from golang.org
+get_latest_golang_version() {
+    log_status "Fetching latest golang version..."
+    local latest_version
+
+    latest_version=$(curl -s https://go.dev/VERSION?auto=1 2>/dev/null | head -n1 | sed 's/go//')
+    
+    if [ -z "$latest_version" ]; then
+        log_warn "Could not fetch latest golang version, using default: v1.25.5"
+        latest_version="1.25.5"
+    fi
+    
+    echo "$latest_version"
+}
+
+# Function to get installed golang version
+get_installed_golang_version() {
+    if [ -f /usr/local/go/bin/go ]; then
+        /usr/local/go/bin/go version 2>/dev/null | awk '{print $3}' | sed 's/go//'
+    fi
+}
+
+# Function to install golang
+install_golang() {
+    log_status "Starting Go installation..."
+    sleep 1
+    
+    local installed_version=$(get_installed_golang_version)
+    local latest_version=$(get_latest_golang_version)
+    
+    if [ -n "$installed_version" ]; then
+        log_info "Go is already installed: version ${installed_version}"
+        read -p "Do you want to update to version ${latest_version}? (y/n): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log_status "Skipping golang installation"
+            return 0
+        fi
+        # Backup existing installation
+        log_info "Backing up existing Go installation..."
+        $SUDO mv /usr/local/go /usr/local/go.backup.${installed_version}
+    fi
+    
+    log_info "Downloading Go ${latest_version} for ${AARCH}..."
+    local download_url="https://dl.google.com/go/go${latest_version}.linux-${AARCH}.tar.gz"
+    local temp_file="/tmp/go${latest_version}.linux-${AARCH}.tar.gz"
+    
+    if wget -q "${download_url}" -O "${temp_file}"; then
+        log_info "✓ Downloaded successfully"
+        log_info "Extracting Go to /usr/local/..."
+        if $SUDO tar -C /usr/local/ -xzf "${temp_file}"; then
+            rm -f "${temp_file}"
+            log_info "✓ Go ${latest_version} installed successfully"
+            
+            # Setup environment
+            setup_golang_env
+            return 0
+        else
+            log_error "Failed to extract Go archive"
+            if [ -d /usr/local/go.backup.${installed_version} ]; then
+                log_warn "Restoring previous installation..."
+                $SUDO mv /usr/local/go.backup.${installed_version} /usr/local/go
+            fi
+            return 1
+        fi
+    else
+        log_error "Failed to download Go from ${download_url}"
+        if [ -d /usr/local/go.backup.${installed_version} ]; then
+            log_warn "Restoring previous installation..."
+            $SUDO mv /usr/local/go.backup.${installed_version} /usr/local/go
+        fi
+        return 1
+    fi
+}
+
+# Function to setup golang environment
+setup_golang_env() {
+    log_status "Setting up Go environment..."
+    
+    # Create bash_aliases if it doesn't exist
+    if [ ! -f ~/.bash_aliases ]; then
+        log_info "Creating ~/.bash_aliases"
+        touch ~/.bash_aliases
+        chmod 644 ~/.bash_aliases
+    fi
+    
+    # Remove existing golang paths if present
+    sed -i '/GOROOT/d' ~/.bash_aliases
+    sed -i '/GOPATH/d' ~/.bash_aliases
+    sed -i '/:\/usr\/local\/go/d' ~/.bash_aliases
+    
+    # Add new golang configuration
+    echo "export GOROOT=/usr/local/go" >> ~/.bash_aliases
+    echo "export GOPATH=\$HOME/go-workspace" >> ~/.bash_aliases
+    echo "export PATH=\$GOPATH/bin:\$GOROOT/bin:\$PATH" >> ~/.bash_aliases
+
+    source ~/.bash_aliases 2>/dev/null || true
+    
+    mkdir -p ~/go-workspace/bin ~/go-workspace/src ~/go-workspace/pkg
+    
+    log_info "✓ Go environment configured"
+}
