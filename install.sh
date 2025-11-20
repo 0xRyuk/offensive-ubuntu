@@ -413,3 +413,113 @@ install_github_tools() {
         log_status "Spiderfoot already installed"
     fi
 }
+
+# Function to install additional security tools
+install_security_tools() {
+    log_status "Installing additional security tools..."
+    sleep 1
+    
+    log_info "Installing Metasploit Framework..."
+    if curl -s https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > /tmp/msfinstall && chmod 755 /tmp/msfinstall; then
+        if /tmp/msfinstall > /dev/null 2>&1; then
+            log_info "✓ Metasploit Framework installed"
+        else
+            log_warn "✗ Metasploit installation had issues"
+        fi
+        rm -f /tmp/msfinstall
+    else
+        log_warn "✗ Failed to download Metasploit installer"
+    fi
+    
+    log_info "Installing Maltego..."
+    if wget -q https://maltego-downloads.s3.us-east-2.amazonaws.com/linux/Maltego.v4.3.1.deb -O /tmp/Maltego.deb; then
+        if $SUDO dpkg -i /tmp/Maltego.deb > /dev/null 2>&1; then
+            log_info "✓ Maltego installed"
+        else
+            log_warn "✗ Maltego installation had issues"
+        fi
+        rm -f /tmp/Maltego.deb
+    else
+        log_warn "✗ Failed to download Maltego"
+    fi
+    
+    log_info "Installing WPScan..."
+    if $SUDO gem install wpscan > /dev/null 2>&1; then
+        log_info "✓ WPScan installed"
+    else
+        log_warn "✗ Failed to install WPScan"
+    fi
+    
+    log_info "Installing Social Engineer Toolkit..."
+    if git clone https://github.com/trustedsec/social-engineer-toolkit.git /tmp/setoolkit > /dev/null 2>&1; then
+        if cd /tmp/setoolkit && pip3 install -r requirements.txt > /dev/null 2>&1 && $SUDO python3 setup.py > /dev/null 2>&1; then
+            log_info "✓ Social Engineer Toolkit installed"
+        else
+            log_warn "✗ Social Engineer Toolkit installation had issues"
+        fi
+        rm -rf /tmp/setoolkit
+    else
+        log_warn "✗ Failed to clone Social Engineer Toolkit"
+    fi
+}
+
+# Function to display completion message
+show_completion_message() {
+    clear
+    show_banner
+    echo ""
+    echo -e "${green}╔════════════════════════════════════════════╗${reset}"
+    echo -e "${green}║     INSTALLATION COMPLETED SUCCESSFULLY!   ║${reset}"
+    echo -e "${green}╚════════════════════════════════════════════╝${reset}"
+    echo ""
+    echo -e "${cyan}Your Ubuntu system is ready for offensive security testing!${reset}"
+    echo ""
+    echo -e "${yellow}Important Information:${reset}"
+    echo "  • Go tools installed in: ~/go-workspace/bin"
+    echo "  • Arsenal tools installed in: ~/arsenal"
+    echo "  • Apply environment variables: ${cyan}source ~/.bash_aliases${reset}"
+    echo ""
+    echo -e "${blue}Github: https://github.com/0xRyuk${reset}"
+    echo ""
+}
+
+# Main execution loop
+main() {
+    while true; do
+        show_main_menu
+        local choice=$(get_user_choice)
+        
+        case "$choice" in
+            1) install_apt_packages ;;
+            2) install_snap_packages ;;
+            3) install_golang && install_go_tools ;;
+            4) install_github_tools ;;
+            5) install_security_tools ;;
+            6)
+                log_info "Installing ALL components..."
+                install_apt_packages
+                install_snap_packages
+                install_golang
+                install_go_tools
+                install_github_tools
+                install_security_tools
+                show_completion_message
+                exit 0
+                ;;
+            7)
+                log_info "Exiting installation script"
+                exit 0
+                ;;
+            *)
+                log_error "Invalid choice. Please enter a number between 1 and 7"
+                ;;
+        esac
+        
+        echo ""
+        read -p "Press Enter to continue..."
+    done
+}
+
+# Run the script
+initialize_setup
+main
