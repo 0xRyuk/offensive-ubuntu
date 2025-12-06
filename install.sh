@@ -399,10 +399,10 @@ install_github_tools() {
     fi
     
     log_info "Installing Spiderfoot..."
-    if [ ! -d ~/arsenal/spiderfoot-3.3 ]; then
-        if wget -q https://github.com/smicallef/spiderfoot/archive/v3.3.tar.gz -O /tmp/spiderfoot.tar.gz; then
+    if [ ! -d ~/arsenal/spiderfoot-4.0 ]; then
+        if wget -q https://github.com/smicallef/spiderfoot/archive/v4.0.tar.gz -O /tmp/spiderfoot.tar.gz; then
             tar -xzf /tmp/spiderfoot.tar.gz -C ~/arsenal
-            if cd ~/arsenal/spiderfoot-3.3 && pip3 install -r requirements.txt > /dev/null 2>&1; then
+            if cd ~/arsenal/spiderfoot-4.0 && pip3 install -r requirements.txt > /dev/null 2>&1; then
                 log_info "✓ Spiderfoot installed"
             fi
             rm -f /tmp/spiderfoot.tar.gz
